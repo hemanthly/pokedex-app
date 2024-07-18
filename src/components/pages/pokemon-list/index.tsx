@@ -93,6 +93,11 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", page.toString());
+    params.delete("type");
+    params.delete("gender");
+    Object.keys(initialStatValues).forEach((stat) => {
+      params.delete(stat);
+    });
     router.push(`/?${params.toString()}`);
   };
 

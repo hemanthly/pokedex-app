@@ -88,9 +88,9 @@ export const fetchPokemonDescription = async (id : number) => {
     //   (entry : { language: { name: string } }) => entry.language.name === 'en'
     // )?.flavor_text;
     // return description;
-    const description = data.flavor_text_entries.filter((entry)=> entry.language.name === 'en'
+    const description = data.flavor_text_entries.filter((entry : any)=> entry.language.name === 'en'
         
-    ).map((entry)=>entry.flavor_text).slice(0, 15).join(' ');
+    ).map((entry : any)=>entry?.flavor_text).slice(0, 25).join(' ');
 
     return description;
   } catch (error) {
