@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,10 +10,20 @@ import {
   initialStatValues,
 } from "@/components/atoms/dropdown/Dropdown.types";
 
-const Accordion: React.FC<AccordionProps> = ({ title, items, paramName }) => {
+interface ExtendedAccordionProps extends AccordionProps {
+  isOpen: boolean;
+  toggleAccordion: (accordionTitle: string) => void;
+}
+
+const Accordion: React.FC<ExtendedAccordionProps> = ({
+  title,
+  items,
+  paramName,
+  isOpen,
+  toggleAccordion,
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [statValues, setStatValues] = useState<StatValues>(initialStatValues);
 
@@ -67,7 +77,6 @@ const Accordion: React.FC<AccordionProps> = ({ title, items, paramName }) => {
   const handleApply = (newStatValues: StatValues) => {
     setStatValues(newStatValues);
     updateStatParams(newStatValues);
-    setIsOpen(false);
   };
 
   const updateStatParams = (values: StatValues) => {
@@ -87,7 +96,7 @@ const Accordion: React.FC<AccordionProps> = ({ title, items, paramName }) => {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      setIsOpen((prevIsOpen) => !prevIsOpen);
+      toggleAccordion(title);
     }
   };
 
@@ -104,32 +113,37 @@ const Accordion: React.FC<AccordionProps> = ({ title, items, paramName }) => {
   const firstCheckedItem = checkedItems.length > 0 ? checkedItems[0] : "";
 
   return (
-    <div className="w-full">
+    <div className="w-full mb-3 ">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => toggleAccordion(title)}
         onKeyDown={handleKeyDown}
-        className={`w-full flex justify-between items-center p-4 ${
-          !isOpen ? "border-b border-gray-300" : ""
-        }`}
+        className={`w-full flex justify-between items-center p-4 rounded-md border-darkblue border-[1px]`}
+        // ${
+        //   !isOpen ? "border-b border-gray-300" : ""
+        // }
         aria-expanded={isOpen}
         aria-controls={`content-${title}`}
         id={`accordion-${title}`}
       >
-        <span className="text-lg font-medium">{title}</span>
-        <span className="text-sm text-gray-500">
-          {firstCheckedItem &&
-            `${firstCheckedItem} + ${checkedItems.length - 1} More`}
+        <span className="text-lg font-medium">{title}        <span className=" text-base text-darkblue border-l-2 ml-2 font-normal pl-2 ">
+          {!firstCheckedItem &&
+            `Select`}
         </span>
-        <span>{isOpen ? <FiMinusCircle /> : <GoPlusCircle />}</span>
+        <span className=" text-base font-normal ">{firstCheckedItem &&
+            ` ${firstCheckedItem}`}</span>
+        <span className=" text-base text-darkblue font-bold">          {firstCheckedItem &&
+            ` + ${checkedItems.length - 1} More`}</span></span>
+
+        <span>{isOpen ? <FiMinusCircle size={25}/> : <GoPlusCircle size={25} />}</span>
       </button>
       {isOpen && title !== "Stats" && (
         <div
           id={`content-${title}`}
-          className="p-4"
+          className="p-4 flex justify-center"
           role="region"
           aria-labelledby={`accordion-${title}`}
         >
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-x-12 gap-y-2">
             {items.map((item, index) => (
               <label key={index} className="flex items-center space-x-2">
                 <input
@@ -154,7 +168,7 @@ const Accordion: React.FC<AccordionProps> = ({ title, items, paramName }) => {
         <StatsDropdownContent
           initialValues={statValues}
           onApply={handleApply}
-          onClose={() => setIsOpen(false)}
+          onClose={() => toggleAccordion(title)}
         />
       )}
     </div>

@@ -88,7 +88,7 @@ const FilterModal = ({ isOpen, onClose, children }: any) => {
       <div
         ref={modalRef}
         tabIndex={-1}
-        className="bg-white rounded-lg w-11/12 p-5 h-[96%] flex flex-col relative"
+        className="bg-white rounded-lg w-11/12 p-5 h-[97%] flex flex-col relative"
       >
         <div className="p-4 border-b border-gray-300 flex justify-between">
           <h2 id="filter-modal-title" className="text-xl font-semibold">
@@ -102,7 +102,7 @@ const FilterModal = ({ isOpen, onClose, children }: any) => {
             &times;
           </button>
         </div>
-        <div className="mt-4 h-[82%] overflow-y-auto">{children}</div>
+        <div className="mt-4 h-[83%] overflow-y-auto">{children}</div>
         <div className="flex justify-between p-4 border-t border-gray-300 absolute bottom-0 w-11/12 z-50">
           <button
             className="bg-white text-black border border-black px-10 py-2 rounded-md"

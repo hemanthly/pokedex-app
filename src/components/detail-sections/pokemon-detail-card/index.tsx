@@ -181,7 +181,7 @@ const PokemonDetailHead = ({
             </div>
           </header>
           <p>
-            {description}
+            {description.slice(0,145)}
             <span
               className="font-bold cursor-pointer"
               onClick={() => setIsModalOpen(true)}
@@ -207,10 +207,10 @@ const PokemonDetailHead = ({
         id="descriptionModal"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        customClasses="bg-darkblue text-white w-[90%] md:w-[61%] mx-8"
+        customClasses="bg-darkblue text-white w-[90%] md:w-[61%] mx-8 max-h-[50%] md:max-h-[70%]"
         customStyles={{ top: modalPosition.top }}
       >
-        <div className="p-4">{description}</div>
+        <div className="p-4">{description.slice()}</div>
       </GenericModal>
     </div>
   );

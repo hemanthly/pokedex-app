@@ -88,13 +88,13 @@ const StatsDropdownContent: React.FC<StatsDropdownContentProps> = ({
 
   return (
     <div
-      className="mt-1 sm:absolute sm:mt-4 sm:bg-white sm:rounded-md sm:shadow-lg sm:border w-[100%] sm:w-[600px] sm:ml-[-445px] h-auto sm:p-4 ml-[-20px] px-6 z-50"
+      className=" sm:absolute sm:mt-4 sm:bg-white sm:rounded-md sm:shadow-lg sm:border w-[100%] sm:w-[600px] sm:ml-[-445px] h-auto sm:p-4 px-6 z-50"
       onClick={(e) => e.stopPropagation()}
       role="dialog"
       aria-labelledby="dialog-label"
       aria-modal="true"
     >
-      <div className="hidden px-4 py-2 sm:flex justify-between items-center">
+      <div className="hidden px-4 sm:py-2 sm:flex justify-between items-center">
         <h2 id="dialog-label" className="font-bold text-lg">
           Select Stats
         </h2>

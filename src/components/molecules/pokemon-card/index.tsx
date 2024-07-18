@@ -161,7 +161,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ id, name, imgUrl, types }) =>
       }}
       id={`pokemon-${id}`}
     >
-      <Link href={`/pokemon-detail/${name}/${id}`} id={`link-${id}`}>
+      <Link href={`/pokemon-detail/${name}/${id}`} id={`link-${id}`} tabIndex={-1}>
         <div className="flex flex-col justify-center items-center w-full">
           <div className="flex justify-center items-center w-full">
             <Image

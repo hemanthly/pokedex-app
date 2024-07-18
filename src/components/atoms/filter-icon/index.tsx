@@ -8,6 +8,7 @@ import { GENDER_ITEMS, STAT_ITEMS, TYPE_ITEMS } from "@/utils/constants";
 
 const FilterIcon: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -22,6 +23,10 @@ const FilterIcon: React.FC = () => {
       e.preventDefault();
       handleOpenModal();
     }
+  };
+
+  const toggleAccordion = (accordionTitle: string) => {
+    setOpenAccordion((prevOpen) => (prevOpen === accordionTitle ? null : accordionTitle));
   };
 
   return (
@@ -41,9 +46,27 @@ const FilterIcon: React.FC = () => {
       <div className="block sm:hidden">
         <FilterModal isOpen={isModalOpen} onClose={handleCloseModal}>
           <div className="flex flex-col md:hidden h-full overflow-scroll">
-            <Accordion title="Type" items={TYPE_ITEMS} paramName="type" />
-            <Accordion title="Gender" items={GENDER_ITEMS} paramName="gender" />
-            <Accordion title="Stats" items={STAT_ITEMS} paramName="stats" />
+            <Accordion
+              title="Type"
+              items={TYPE_ITEMS}
+              paramName="type"
+              isOpen={openAccordion === "Type"}
+              toggleAccordion={toggleAccordion}
+            />
+            <Accordion
+              title="Gender"
+              items={GENDER_ITEMS}
+              paramName="gender"
+              isOpen={openAccordion === "Gender"}
+              toggleAccordion={toggleAccordion}
+            />
+            <Accordion
+              title="Stats"
+              items={STAT_ITEMS}
+              paramName="stats"
+              isOpen={openAccordion === "Stats"}
+              toggleAccordion={toggleAccordion}
+            />
           </div>
         </FilterModal>
       </div>

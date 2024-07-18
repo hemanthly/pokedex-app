@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import './index.css';
 
 const GenericModal = ({ isOpen, onClose, children, customClasses = "", customStyles = {} }: any) => {
   const modalRef = useRef<HTMLDivElement>(null);

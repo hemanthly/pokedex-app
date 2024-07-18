@@ -84,13 +84,13 @@ export const fetchPokemonWeakAgainst = async (id : number) => {
 export const fetchPokemonDescription = async (id : number) => {
   try {
     const data = await getRequest(`${BASE_URL}/pokemon-species/${id}`);
-    const description = data.flavor_text_entries.find(
-      (entry : { language: { name: string } }) => entry.language.name === 'en'
-    )?.flavor_text;
-    return description;
-    // const description = data.flavor_text_entries.filter((entry)=> entry.language.name === 'en'
+    // const description = data.flavor_text_entries.find(
+    //   (entry : { language: { name: string } }) => entry.language.name === 'en'
+    // )?.flavor_text;
+    // return description;
+    const description = data.flavor_text_entries.filter((entry)=> entry.language.name === 'en'
         
-    // ).map((entry)=>entry.flavor_text).slice(0, 5).join(' ');
+    ).map((entry)=>entry.flavor_text).slice(0, 15).join(' ');
 
     return description;
   } catch (error) {
