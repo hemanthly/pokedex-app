@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactSlider from "react-slider";
 import cn from "classnames";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -25,6 +25,9 @@ const StatsDropdownContent: React.FC<StatsDropdownContentProps> = ({
   );
   const router = useRouter();
   const searchParams = useSearchParams();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const resetButtonRef = useRef<HTMLButtonElement>(null);
+  const applyButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -40,6 +43,19 @@ const StatsDropdownContent: React.FC<StatsDropdownContentProps> = ({
 
     setValues(newValues);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
 
   const handleSliderChange = (
     stat: keyof StatValues,
@@ -86,9 +102,11 @@ const StatsDropdownContent: React.FC<StatsDropdownContentProps> = ({
     router.push(`/?${params.toString()}`);
   };
 
+  const isChanged = JSON.stringify(values) !== JSON.stringify(initialStatValues);
+
   return (
     <div
-      className=" sm:absolute sm:mt-4 sm:bg-white sm:rounded-md sm:shadow-lg sm:border w-[100%] sm:w-[600px] sm:ml-[-445px] h-auto sm:p-4 px-6 z-50"
+      className="sm:absolute sm:mt-4 sm:bg-white sm:rounded-md sm:shadow-lg sm:border w-[100%] sm:w-[600px] sm:ml-[-445px] h-auto sm:p-4 px-6 z-50"
       onClick={(e) => e.stopPropagation()}
       role="dialog"
       aria-labelledby="dialog-label"
@@ -99,6 +117,7 @@ const StatsDropdownContent: React.FC<StatsDropdownContentProps> = ({
           Select Stats
         </h2>
         <button
+          ref={closeButtonRef}
           type="button"
           className="flex items-center justify-center"
           onClick={onClose}
@@ -148,6 +167,7 @@ const StatsDropdownContent: React.FC<StatsDropdownContentProps> = ({
                   {...props}
                   className="rounded-md w-8 h-4 flex items-center justify-center text-white bg-indigo-900 -translate-y-1/2 text-xs"
                   aria-label={`Thumb for ${STAT_LABELS[stat]}`}
+                  tabIndex={0}
                 >
                   {state.valueNow}
                 </div>
@@ -174,20 +194,28 @@ const StatsDropdownContent: React.FC<StatsDropdownContentProps> = ({
       ))}
       <div className="flex justify-end p-3">
         <button
+          ref={resetButtonRef}
           type="button"
-          className="text-xs px-1 py-1 mr-4 sm:px-4 sm:py-2 border rounded"
+          className={cn("text-xs px-1 py-1 mr-4 sm:px-4 sm:py-2 border rounded", {
+            "opacity-50 cursor-not-allowed": !isChanged,
+          })}
           onClick={handleReset}
           onKeyDown={(e) => handleKeyDown(e, handleReset)}
           aria-label="Reset all sliders to default values"
+          disabled={!isChanged}
         >
           Reset
         </button>
         <button
+          ref={applyButtonRef}
           type="button"
-          className="text-xs mr-1 px-1 py-1 sm:mr-4 sm:px-4 sm:py-2 border rounded bg-indigo-900 text-white"
+          className={cn("text-xs mr-1 px-1 py-1 sm:mr-4 sm:px-4 sm:py-2 border rounded bg-darkblue text-white", {
+            "opacity-50 cursor-not-allowed": !isChanged,
+          })}
           onClick={handleApply}
           onKeyDown={(e) => handleKeyDown(e, handleApply)}
           aria-label="Apply current slider values"
+          disabled={!isChanged}
         >
           Apply
         </button>

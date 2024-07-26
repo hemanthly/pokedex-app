@@ -1,12 +1,33 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import React, { useEffect, useRef } from "react";
-import { initialStatValues } from "../dropdown";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  StatValues,
+  initialStatValues,
+} from "@/components/atoms/dropdown/Dropdown.types";
 
-const FilterModal = ({ isOpen, onClose, children }: any) => {
+interface FilterModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  pendingFilters: Record<string, string[] | StatValues>;
+  onApply: () => void;
+  onReset: () => void;
+}
+
+const FilterModal: React.FC<FilterModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  children, 
+  pendingFilters,
+  onApply,
+  onReset
+}) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isAnyFilterSelected, setIsAnyFilterSelected] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -61,22 +82,25 @@ const FilterModal = ({ isOpen, onClose, children }: any) => {
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const hasFilters = Object.values(pendingFilters).some(value => 
+      Array.isArray(value) ? value.length > 0 : 
+      Object.values(value as StatValues).some(statValue => 
+        JSON.stringify(statValue) !== JSON.stringify(initialStatValues[statValue as keyof StatValues])
+      )
+    );
+    setIsAnyFilterSelected(hasFilters);
+  }, [pendingFilters]);
 
   const handleReset = () => {
-    const params = new URLSearchParams(window.location.search);
-    params.delete("type");
-    params.delete("gender");
-    Object.keys(initialStatValues).forEach((stat) => {
-      params.delete(stat);
-    });
-    router.push(`/?${params.toString()}`);
-    onClose();
+    onReset();
   };
 
   const handleSubmit = () => {
-    onClose();
+    onApply();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div
@@ -104,21 +128,23 @@ const FilterModal = ({ isOpen, onClose, children }: any) => {
         </div>
         <div className="mt-4 h-[83%] overflow-y-auto">{children}</div>
         <div className="flex justify-between p-4 border-t border-gray-300 absolute bottom-0 w-11/12 z-50">
-          <button
-            className="bg-white text-black border border-black px-10 py-2 rounded-md"
-            type="reset"
-            onClick={handleReset}
-          >
-            Reset
-          </button>
-          <button
-            className="bg-gray-800 text-white px-10 py-2 rounded-md"
-            type="submit"
-            onClick={handleSubmit}
-          >
-            Apply
-          </button>
-        </div>
+        <button
+          className={`bg-white text-black border border-black px-10 py-2 rounded-md ${!isAnyFilterSelected ? 'opacity-50 cursor-not-allowed' : ''}`}
+          type="reset"
+          onClick={handleReset}
+          disabled={!isAnyFilterSelected}
+        >
+          Reset
+        </button>
+        <button
+          className={`bg-gray-800 text-white px-10 py-2 rounded-md ${!isAnyFilterSelected ? 'opacity-50 cursor-not-allowed' : ''}`}
+          type="submit"
+          onClick={handleSubmit}
+          disabled={!isAnyFilterSelected}
+        >
+          Apply
+        </button>
+      </div>
       </div>
     </div>
   );
