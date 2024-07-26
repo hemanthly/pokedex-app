@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PokemonCard from "@/components/molecules/pokemon-card";
 import PaginationButtons from "@/components/molecules/pagination-buttons";
 import { initialStatValues } from "@/components/atoms/dropdown";
 import { CLEAR_FILTERS_BUTTON_TEXT } from "@/utils/constants";
+import Image from "next/image";
 
 interface Pokemon {
   id: number;
@@ -36,6 +37,7 @@ const PokemonList: React.FC<PokemonListProps> = ({
   const { pokemons, next, prev } = data;
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isClicked, setIsClicked] = useState(false);
 
   const types = searchParams.get("type")
     ? searchParams
@@ -102,6 +104,8 @@ const PokemonList: React.FC<PokemonListProps> = ({
   };
 
   const handleClearFilters = () => {
+    setIsClicked(true);
+    setTimeout(() => setIsClicked(false), 150); // Reset after 150ms
     const params = new URLSearchParams(searchParams);
     params.delete("type");
     params.delete("gender");
@@ -115,36 +119,53 @@ const PokemonList: React.FC<PokemonListProps> = ({
     <div className="px-4 md:px-8 lg:px-10 relative">
       <h1 className="sr-only">Pokemon List</h1>
       <div className="w-full flex justify-end mb-4">
-        <button
-          onClick={handleClearFilters}
-          className="bg-darkblue text-white px-4 py-1 rounded-md hidden md:block text-sm"
-        >
-          {CLEAR_FILTERS_BUTTON_TEXT}
-        </button>
+      <button
+  onClick={handleClearFilters}
+  className={`bg-darkblue text-white px-4 py-1 rounded-md hidden md:block text-sm
+    transition-all duration-150 ease-in-out
+    ${isClicked ? 'transform translate-y-0.5 opacity-80' : ''}`}
+>
+  {CLEAR_FILTERS_BUTTON_TEXT}
+</button>
       </div>
-      <ul
-        className="w-full grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-6 lg:gap-10 justify-items-center"
-        role="list"
-        aria-label="Pokemon List"
-      >
-        {filteredPokemons.map((pokemon) => (
-          <PokemonCard
-            imgUrl={pokemon.imgUrl}
-            name={pokemon.name}
-            id={pokemon.id}
-            key={pokemon.id}
-            types={pokemon.types}
+      {filteredPokemons.length > 0 ? (
+        <ul
+          className={`w-full grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 md:gap-8 lg:grid-cols-6 lg:gap-10 justify-items-center`}
+          role="list"
+          aria-label="Pokemon List"
+        >
+          {filteredPokemons.map((pokemon) => (
+            <PokemonCard
+              imgUrl={pokemon.imgUrl}
+              name={pokemon.name}
+              id={pokemon.id}
+              key={pokemon.id}
+              types={pokemon.types}
+            />
+          ))}
+        </ul>
+      ) : (
+        <div className="flex flex-col items-center justify-center p-8">
+          <Image
+            src="/images/no-results.png"
+            alt="No pokemons found"
+            width={250}
+            height={250}
           />
-        ))}
-      </ul>
+          <p className="mt-2 text-lg text-gray-600">
+            Try adjusting your filters.
+          </p>
+        </div>
+      )}
 
-      <nav aria-label="Pagination" className=" w-full flex justify-center">
-        <PaginationButtons
-          currentPage={currentPage}
-          hasNextPage={!!next}
-          onPageChange={handlePageChange}
-        />
-      </nav>
+        <nav aria-label="Pagination" className="w-full flex justify-center">
+          <PaginationButtons
+            currentPage={currentPage}
+            hasNextPage={!!next}
+            onPageChange={handlePageChange}
+          />
+        </nav>
+
     </div>
   );
 };
